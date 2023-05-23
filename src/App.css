@@ -1,5 +1,25 @@
 .App {
   text-align: center;
+  /* width: 100vw; */
+  
+
+}
+
+html{
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  height: 100%;
+}
+
+body{
+  min-height: 100%;
+  margin: 0;
+  padding: 0;
+  background-color: #282c34;
+  /* height: 100%; */
+  /* width: 100%; */
+ 
 }
 
 .App-logo {
@@ -14,14 +34,15 @@
 }
 
 .App-header {
-  background-color: #282c34;
-  min-height: 100vh;
+  
+  
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: left;
   justify-content: center;
   font-size: calc(10px + 2vmin);
   color: white;
+  
 }
 
 .App-link {
@@ -36,3 +57,66 @@
     transform: rotate(360deg);
   }
 }
+
+.MuiInputBase-root{
+  background-color: white;
+  border-top-left-radius: 4px;
+  border-bottom-left-radius: 4px;
+  height: 5vh;
+  padding-left: 10px;
+
+}
+
+.MuiButtonBase-root{
+  height: 5vh;
+  border-top-right-radius: 4px;
+  border-bottom-right-radius: 4px;
+  border-bottom-left-radius: 0;
+  border-top-left-radius: 0;
+
+}
+
+.Weather-grid{
+  grid-template-columns: 25% 35% 25%;
+  width: 100%;
+  height: 100%;
+  margin: 0 auto;
+  display: grid;
+  margin-top: 30px;
+
+}
+
+.grid1 {
+  grid-column: 1;
+  
+}
+
+.grid2{
+  grid-column: 2;
+  width: 700px;
+}
+
+.grid3{
+  grid-column: 3;
+  display:flex;
+  flex-wrap: wrap;
+  /* border-left: 1px solid #5c6475; */
+  width: 30vw;
+  margin-left: 5vw;
+  
+}
+
+.saved-temp:hover{
+  box-shadow: 3px 3px 5px 5px #5c6475;
+}
+.saved-temp{
+  border-radius: 5px;
+  margin-left: 2vw;
+  border: 1px solid #5c6475 ;
+}
+
+/* canvas{
+  height: 500 !important;
+  width: px !important;
+} */
+
