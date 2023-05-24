@@ -19,22 +19,19 @@ const BingMap = (props: any) => {
 
     const ref = useRef<any>()
     
-
         
       
 
 
     useEffect(() => {
-       
 
         
     }, [])
 
     return (
         <>
-            {/* <script type="text/javascript" src='http://www.bing.com/api/maps/mapcontrol?callback=initMap'></script>
-            <div ref={ref} className="map" style={{position:'relative', width:'600px', height:'400px'}}></div> */}
-            <div>
+            
+             <div>
 
                 <BingMapsReact
                         bingMapsKey="Aiz3FXWF3d9BNzeRon844MKzGplbv4r7s-MaZ5yNVUcmIf6rfECI16Q9oNwZxrBK"
@@ -42,9 +39,7 @@ const BingMap = (props: any) => {
                         height="30vh"
                         mapOptions={{
                             navigationBarMode: "square",
-                            
                         }}
-                        
                         pushPins={pushPins}
                         width="34vw"
                         viewOptions={{
@@ -53,7 +48,7 @@ const BingMap = (props: any) => {
                             }}
                         
                         
-                    />
+                />
 
             </div>
         </>

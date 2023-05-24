@@ -1,8 +1,8 @@
 import React, { useEffect, useState, useContext } from 'react'
-import GET, { GETHOURFORECAST, GETIPINFO } from '../API/APIRequest'
+import GET, { GETHOURFORECAST, GETIPINFO, GETLOC } from '../API/APIRequest'
 import { get } from 'http';
 import { resolve } from 'path';
-import { Card, TextField, Button, useFormControl } from '@mui/material';
+import { Card, TextField, Button, useFormControl, Skeleton, Autocomplete } from '@mui/material';
 import shadows from '@mui/material/styles/shadows';
 import SearchIcon from '@mui/icons-material/Search';
 import Divider from '@mui/material/Divider';
@@ -24,11 +24,18 @@ import ScrollContainer from 'react-indiana-drag-scroll'
 import {GiWaterDrop} from 'react-icons/gi'
 import {BsWind} from 'react-icons/bs'
 import {FaCompass} from 'react-icons/fa'
-
+import {BiCurrentLocation} from 'react-icons/bi'
+import Tooltip from '@mui/material/Tooltip'
+import { auth } from '../firebaseSetup';
 
 
 const WeatherComponent = () => {
     
+
+    type Item = {
+        name: string
+    }
+
     const [searchString, setSearchString] = useState<string>("Helsingborg");
     const [loading, setLoading] = useState<string>("");
     const [response, setResponse] = useState<any>();
@@ -43,6 +50,8 @@ const WeatherComponent = () => {
     const [bool, setBool] = useState(false);
     const [ipInfo, setIpInfo] = useState<any>(); 
     const [ip, setIp] = useState<any>(false);
+    const [boolColor, setBoolColor] = useState<any>(false);
+    const [autoCompleteCity, setAutoCompleteCity] = useState<any[]>([{name: ""}]);
     // const [useDate, setUse Date] = useState<Date>(new Date())
     
 
@@ -94,6 +103,7 @@ const WeatherComponent = () => {
         GETIPINFO().then((res: any) => {
             setIpInfo(res.body)
             setIp(true)
+            setSearchString(res.body?.city)
             GET(res.body.city)
             .then((res: any) => {
                 setLoading("loading")
@@ -101,7 +111,7 @@ const WeatherComponent = () => {
                 console.log(response);
                 setLoading("success");
                 setIp(false)
-                setSearchString(ipInfo.city)
+                
                 // setSearchString(ipInfo.city)
             })
             .catch((err: any) => {
@@ -122,20 +132,53 @@ const WeatherComponent = () => {
         setSavedTemps([...savedTemps]);   
         console.log(savedTemps);     
     }
-    
-    useEffect(() => {
-        console.log(bool)
-        console.log(window.Microsoft)
-        if(bool == true){
-            
+
+    const searchWithEnter = (event: any) => {
+        
+        if(event.key === 'Enter'){
+            GET(searchString) 
+            .then((res: any) => {
+                setLoading("loading")
+                setResponse(res.body);
+                console.log(response);
+                setLoading("success");
+            })
+            .catch((err: any) => {
+                setLoading('error');
+            })
+            event.preventDefault();
         }
-    }, [searchString, response, savedTemps, bool, ipInfo])
+
+    }
+
+
+    const getLocationAutoComplete = () => {
+        GETLOC(searchString)
+        .then((res: any) => {
+            setAutoCompleteCity(res.body.features.map((place: any) => place.place_name.split(",")[0]))
+            
+        }).catch((err: any) => {
+            setLoading("error");
+        })
+    }
+
+ const changeBgColor = () => {
+      boolColor === true ? document.body.style.backgroundImage = 'linear-gradient(white, lightblue)'  
+       : document.body.style.backgroundImage = 'linear-gradient(#282c34, rgb(69, 97, 107))' 
+  } 
+
+  const signOut = async () => {
+    await auth.signOut();
+  };
+
+    useEffect(() => {
+        changeBgColor();
+        getLocationAutoComplete();
+        
+    }, [searchString, response, savedTemps, bool, ipInfo, boolColor])
     
-   console.log(dailyForecast)
-   console.log(response)
-   console.log(ipInfo)
-   console.log(ip)
-   console.log(searchString)
+  console.log(searchString)
+  console.log(ipInfo)
 
     const Item = styled(Paper)(({ theme }) => ({
         backgroundColor: theme.palette.mode === 'dark' ? '#1A2027' : '#fff',
@@ -155,18 +198,30 @@ const WeatherComponent = () => {
                 <div className="Weather-grid">
                     <div className="grid1">
                     
+                <Tooltip title="Change Theme">
+                    <Switch onClick={() => setBoolColor(!boolColor)} checked={boolColor} sx={{
+                        display: "flex", 
+                        float: "left", 
+                    backgroundColor: boolColor === true ? "lightblue" : "rgb(69, 97, 120)", 
+                    borderRadius: "5px",
+                    marginLeft: "10px"}}/>
+                </Tooltip>
+                   
                     </div>
             <div className="grid2" style={{}}>
-                
+              
                 <Paper component="form" sx={{ p: '2px 4px', display: 'flex', alignItems: 'center', width: "38vw", height: 50, margin: "0 auto", marginLeft: 10}}>
                     <IconButton sx={{ p: '10px' }} aria-label="menu"  id="basic-button"
                             aria-controls={open ? 'basic-menu' : undefined}
                             aria-haspopup="true"
                             aria-expanded={open ? 'true' : undefined}
-                            onClick={handleClick}>
-                        <MenuIcon />
+                            onClick={() => { 
+                                fetchIPInfo()
+                                setSearchString(ipInfo.city)}}
+                                >
+                        <BiCurrentLocation  style={{cursor: "pointer", color:"grey"}} className='CurrentLocationIcon'/>
                     </IconButton>
-                    <Menu
+                    {/* <Menu
                         id="basic-menu"
                         anchorEl={anchorEl}
                         open={open}
@@ -178,9 +233,33 @@ const WeatherComponent = () => {
                             <MenuItem onClick={() => fetchIPInfo()}>IpInfo</MenuItem>
                             <MenuItem onClick={openAccount}>My account</MenuItem>
                             <MenuItem onClick={handleClose}>Logout</MenuItem>
-                        </Menu>
-                    <InputBase type="text" placeholder='Search for a city...' onChange={(e) => setSearchString(e.target.value)} sx={{ ml: 1, flex: 1 }}/>
-                        <Divider sx={{ height: 28, m: 0.5 }} orientation="vertical" />
+                        </Menu> */}
+                        {/* <Autocomplete/> */}
+                            
+                        <Autocomplete
+                            options={autoCompleteCity.map((option: any) => option)}
+                            style={{width: 650}}
+                            onChange={(event, newValue) => {
+                                setSearchString(newValue)
+
+                            }}
+                            // value={searchString}
+                            isOptionEqualToValue={(option, value) => option === value}
+                            // getOptionLabel={(option: any) => option.name}
+                            renderInput={(params: any) =>   
+                                
+                                <TextField 
+                                {...params}
+                                type="text" 
+                                placeholder='Search for a city...' 
+                                onChange={(e) => setSearchString(e.target.value)}
+                                sx={{ ml: 1, flex: 1 }} 
+                                value={searchString} 
+                                onKeyDown={searchWithEnter}
+                                /> } />
+                        
+                            
+                    <Divider sx={{ height: 28, m: 0.5 }} orientation="vertical" />
                         
                     <IconButton  type='button' onClick={() => GET(searchString) 
                                             .then((res: any) => {
@@ -195,13 +274,29 @@ const WeatherComponent = () => {
                                             
                                          
                 </Paper>
+                
                            {/* <i style={{width: 700, fontSize: 20, display: "flex", marginLeft: "14vw"}}>{savedTemps.includes(response) ? alreadyInSaved : savedTemps.length === limit ? alreadyInSaved : null}</i>                  */}
                             {
                                 response ? response.weather.map((x:any) => {
                                     return (
                                        
-                                        <Card variant="outlined" elevation={5} sx={{width: "34.3vw", marginTop: 2, padding: 5, backgroundImage: "linear-gradient(white, lightblue)", boxShadow: 3, height: "80.5vh", marginLeft: 9.5, fontSize: 15}} onClick={() => saveTemp(response)}>
-                                            <Switch {...label} onClick={() => fetchDailyForeCast(!bool)} checked={bool} sx={{display: "flex", float: "right"}}/>
+                                        <Card variant="outlined" id="WeatherCard" elevation={5} sx={{
+                                        width: "34.3vw", 
+                                        marginTop: 1, 
+                                        padding: 5, 
+                                        backgroundImage:  boolColor === true ? "linear-gradient(lightblue, white)" : "linear-gradient(rgb(69, 97, 107), rgb(69, 97, 120))", 
+                                        boxShadow: 3, 
+                                        height: "80.5vh", 
+                                        marginLeft: 9.5,
+                                        fontSize: 15}}>
+                                            <Tooltip title="Toggle Forecast">
+                                                <Switch {...label} onClick={() => fetchDailyForeCast(!bool)} checked={bool} sx={{
+                                                display: "flex", 
+                                                float: "right", 
+                                                marginBottom: "1vh",
+                                                backgroundColor: boolColor === true ? "white" : "lightblue",
+                                                borderRadius: "5px"}}/>
+                                            </Tooltip>
                                             <div style={{borderRadius: "5px", 
                                             width: "32.5vw", 
                                             height: "25vh" , 
@@ -238,13 +333,15 @@ const WeatherComponent = () => {
                                                 </div>
                                             </div>
                                             <div style={{marginTop: "2vh"}}>
-                                                <BingMap 
+                                              {response &&  <BingMap 
                                                 lat={response.coord.lat} 
                                                 lon={response.coord.lon} 
-                                                name={response.name}/>
+                                                name={response.name}/>}
                                             </div>
+                                            <Divider orientation='horizontal' sx={{width:"34vw", marginTop: 2}}/>
+                                                <p style={{margin: 0, padding: 0}}>Forecast</p>
                                             <ScrollContainer horizontal={true}>
-                                                <Stack direction="row" spacing={2} sx={{height: "15vh", marginTop: 5}}>
+                                                <Stack direction="row" spacing={2} sx={{height: "15vh", marginTop:1.2}}>
                                                     {dailyForecast && bool ===  true? dailyForecast.list.map((daily: any) => {
                                                         return (
                                                             <Item sx={{fontSize: 8}}>
@@ -258,7 +355,19 @@ const WeatherComponent = () => {
                                                                 })}
                                                             </Item>
                                                         )
-                                                    }): null}    
+                                                    })
+                                                    : 
+                                                    <div style={{display: "flex", flexDirection: "row", gap: "1vw", marginTop: "-4.6vh"}}>
+                                                        <Skeleton variant="text" sx={{ fontSize: '1rem', width: "3.3vw", margin: "0 auto", height: "22vh"}}/>
+                                                        <Skeleton variant="text" sx={{ fontSize: '1rem', width: "3.3vw", margin: "0 auto", height: "22vh"}}/>
+                                                        <Skeleton variant="text" sx={{ fontSize: '1rem', width: "3.3vw", margin: "0 auto", height: "22vh"}}/>
+                                                        <Skeleton variant="text" sx={{ fontSize: '1rem', width: "3.3vw", margin: "0 auto", height: "22vh"}}/>
+                                                        <Skeleton variant="text" sx={{ fontSize: '1rem', width: "3.3vw", margin: "0 auto", height: "22vh"}}/>
+                                                        <Skeleton variant="text" sx={{ fontSize: '1rem', width: "3.3vw", margin: "0 auto", height: "22vh"}}/>
+                                                        <Skeleton variant="text" sx={{ fontSize: '1rem', width: "3.3vw", margin: "0 auto", height: "22vh"}}/>
+                                                        <Skeleton variant="text" sx={{ fontSize: '1rem', width: "3.3vw", margin: "0 auto", height: "22vh"}}/>
+                                                    </div> 
+                                                    }    
                                                 </Stack>     
                                             </ScrollContainer>                                                   
                                         </Card>
@@ -267,8 +376,11 @@ const WeatherComponent = () => {
                                 }) :  null 
                             }
                         </div>
-                        {/* <div className="grid3">
-                                {savedTemps.map((x: any, i) => { 
+                        <div className="grid3">
+                        <Button onClick={() => signOut()} style={{margin: "0 auto", marginLeft: "25vw"}}>Sign out</Button>
+
+
+                                {/* {savedTemps.map((x: any, i) => { 
                                         return (
                                             <div className="saved-temp" style={{marginTop: 33, width: 200, height: 350}} onClick={() => removeTemp(i)}>
                                                 <h4>{x.name}</h4>
@@ -277,8 +389,8 @@ const WeatherComponent = () => {
                                                 <h2>{x.weather[0].description}</h2>
                                             </div>
                                         )          
-                                })}
-                        </div> */}
+                                })} */}
+                        </div>
 
 
                 </div>

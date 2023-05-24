@@ -19,6 +19,10 @@ export async function GETIPINFO<T>(): Promise<{success: true, body: T} |{success
 	return await ReqIP("GET")
 }
 
+export async function GETLOC<T>(search: string): Promise<{success: true, body: T} |{success: false, error: string}>{
+	return await ReqLoc("GET", search)
+}
+
 async function Req<T>(iMethod: Method, iRelativeURL: string, iPayload?: unknown): Promise<{ success: true, body: T } | { success: false, error: string }> {
 
 	// if (!iRelativeURL.startsWith(""))
@@ -89,6 +93,34 @@ async function ReqIP<T>(iMethod: Method, iPayload?: unknown): Promise<{ success:
 	const axiosConfig: AxiosRequestConfig = {
 		method: iMethod,
 		url: `https://api.ipdata.co?api-key=e2df557e15d7a8eea3f12e17d4a3f29e7f3b4a3a87b5432ec5b224cb`,
+		headers: {
+			"Accept": "application/json",
+		},
+		data: iPayload
+	};
+
+	try {
+		console.log(axiosConfig);
+		const response = await axios(axiosConfig);
+		return { success: true, body: await response.data };
+	} catch (e) {
+		console.log(e);
+		return { success: false, error: (e as Error).message };
+	}
+}
+
+async function ReqLoc<T>(iMethod: Method, text: string, iPayload?: unknown): Promise<{ success: true, body: T } | { success: false, error: string }> {
+
+	// if (!iRelativeURL.startsWith(""))
+	// 	throw Error("Must start with");
+
+	// console.log(`${iMethod} ${iRelativeURL}`);
+	if (iPayload)
+		console.log(iPayload);
+
+	const axiosConfig: AxiosRequestConfig = {
+		method: iMethod,
+		url: `https://api.mapbox.com/geocoding/v5/mapbox.places/${text}.json?access_token=pk.eyJ1IjoiYXJtZCIsImEiOiJjbGkxaHlqcjYwMnJiM29wbTY5ZzRoc2RqIn0.ZjdFNHz7KhnVVg6sMim1sA&cachebuster=1625641871908&autocomplete=true&types=place`,
 		headers: {
 			"Accept": "application/json",
 		},
