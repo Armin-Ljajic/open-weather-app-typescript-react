@@ -217,7 +217,7 @@ const WeatherComponent = () => {
                             aria-expanded={open ? 'true' : undefined}
                             onClick={() => { 
                                 fetchIPInfo()
-                                setSearchString(ipInfo.city)}}
+                                setSearchString(ipInfo?.city)}}
                                 >
                         <BiCurrentLocation  style={{cursor: "pointer", color:"grey"}} className='CurrentLocationIcon'/>
                     </IconButton>

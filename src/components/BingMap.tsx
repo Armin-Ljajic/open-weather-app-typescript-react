@@ -1,4 +1,4 @@
-import React, {useEffect, useRef} from "react";
+import React, {useEffect, useRef, useState} from "react";
 import "bingmaps"
 // import { loadBingApi, Microsoft } from "../BingMapLoader";
 import BingMapsReact from "bingmaps-react"
@@ -18,7 +18,7 @@ const BingMap = (props: any) => {
     const pushPins = [pushpin];
 
     const ref = useRef<any>()
-    
+    const [bingMapReady, setBingMapReady] = useState(false);
         
       
 
@@ -34,16 +34,21 @@ const BingMap = (props: any) => {
              <div>
 
                 <BingMapsReact
-                        bingMapsKey="Aiz3FXWF3d9BNzeRon844MKzGplbv4r7s-MaZ5yNVUcmIf6rfECI16Q9oNwZxrBK"
+                        bingMapsKey={process.env.REACT_APP_API_KEY_BINGMAP}
                         style={{}}
                         height="30vh"
                         mapOptions={{
                             navigationBarMode: "square",
                         }}
-                        pushPins={pushPins}
+                        onMapReady={function (){
+                            setBingMapReady(true);
+                        }}
+                        pushPins={bingMapReady ? pushPins : null}
                         width="34vw"
                         viewOptions={{
-                            center: { latitude: props.lat, longitude: props.lon },
+                            center: { 
+                                latitude: props.lat, 
+                                longitude:props.lon },
                             mapTypeId: "Road",
                             }}
                         

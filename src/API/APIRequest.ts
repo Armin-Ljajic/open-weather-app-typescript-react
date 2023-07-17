@@ -3,7 +3,7 @@ import axios, {AxiosRequestConfig, Method} from 'axios'
 const CITY = "";
 const latH = 0;
 const lonH = 0;
-const APIKEY = "db653252d75bbc24614c714e782c18c2"
+const APIKEY = process.env.REACT_APP_API_KEY_OPENWEATHER;
 const BASEURL = `http://api.openweathermap.org/data/2.5/weather?APPID=${APIKEY}&units=metric&q=`
 const HOURFORECASTURL = `http://api.openweathermap.org/data/2.5/forecast?lat=${latH}&lon=${lonH}&APPID=${APIKEY}`
 
@@ -92,7 +92,7 @@ async function ReqIP<T>(iMethod: Method, iPayload?: unknown): Promise<{ success:
 
 	const axiosConfig: AxiosRequestConfig = {
 		method: iMethod,
-		url: `https://api.ipdata.co?api-key=e2df557e15d7a8eea3f12e17d4a3f29e7f3b4a3a87b5432ec5b224cb`,
+		url: `https://api.ipdata.co?api-key=${process.env.REACT_APP_API_KEY_IPDATA}`,
 		headers: {
 			"Accept": "application/json",
 		},
@@ -120,7 +120,7 @@ async function ReqLoc<T>(iMethod: Method, text: string, iPayload?: unknown): Pro
 
 	const axiosConfig: AxiosRequestConfig = {
 		method: iMethod,
-		url: `https://api.mapbox.com/geocoding/v5/mapbox.places/${text}.json?access_token=pk.eyJ1IjoiYXJtZCIsImEiOiJjbGkxaHlqcjYwMnJiM29wbTY5ZzRoc2RqIn0.ZjdFNHz7KhnVVg6sMim1sA&cachebuster=1625641871908&autocomplete=true&types=place`,
+		url: `https://api.mapbox.com/geocoding/v5/mapbox.places/${text}.json?access_token=${process.env.REACT_APP_TOKEN_MAPBOX}&cachebuster=1625641871908&autocomplete=true&types=place`,
 		headers: {
 			"Accept": "application/json",
 		},
