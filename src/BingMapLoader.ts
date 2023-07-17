@@ -10,7 +10,6 @@ export interface MapWindow extends Window {
   export function loadBingApi(key?: string): Promise<void> {
     const callbackName = "bingAPIReady";
     let url = `https://www.bing.com/api/maps/mapcontrol?callback=${callbackName}`;
-    // let URL =`https://www.bing.com/api/maps/mapcontrol?key=${key}&callback=${callbackName}`
     if (key) {
       url += `&key=${key}`;
     }
