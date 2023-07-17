@@ -7,11 +7,11 @@ const BingMap = (props: any) => {
 
     const pushpin ={
         center: {
-            latitude: props.lat,
-            longitude: props.lon
+            latitude: props !== undefined ? props.lat : null,
+            longitude: props !== undefined ? props.lon : null
         },
         options: {
-            title: props.name
+            title: props !== undefined ? props.name : null
         }
     }
 
@@ -24,16 +24,16 @@ const BingMap = (props: any) => {
 
 
     useEffect(() => {
-
+        setBingMapReady(true);
         
-    }, [])
+    }, [bingMapReady])
 
     return (
         <>
             
              <div>
 
-                <BingMapsReact
+                 { bingMapReady && <BingMapsReact
                         bingMapsKey={process.env.REACT_APP_API_KEY_BINGMAP}
                         style={{}}
                         height="30vh"
@@ -43,18 +43,18 @@ const BingMap = (props: any) => {
                         onMapReady={function (){
                             setBingMapReady(true);
                         }}
-                        pushPins={bingMapReady ? pushPins : null}
+                        pushPins={props !== undefined ? pushPins : null}
                         width="34vw"
                         viewOptions={{
                             center: { 
-                                latitude: props.lat, 
-                                longitude:props.lon },
+                                latitude: props !== undefined ? props.lat : null , 
+                                longitude: props !== undefined ? props.lon : null},
                             mapTypeId: "Road",
                             }}
                         
                         
                 />
-
+                        }
             </div>
         </>
     )

@@ -140,7 +140,7 @@ const WeatherComponent = () => {
             .then((res: any) => {
                 setLoading("loading")
                 setResponse(res.body);
-                console.log(response);
+                console.log(res);
                 setLoading("success");
             })
             .catch((err: any) => {
