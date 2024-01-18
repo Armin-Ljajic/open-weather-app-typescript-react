@@ -1,3 +1,30 @@
+
+# How to use application
+Sign up using a email: 
+
+Can be made up as long as it's a valid email adress following email written structre, example: johndoe@hotmail.com.
+Create a password as well, can be made up out of numbers only for simplicity, as long as length is minimum 6 characters long.
+
+When entered credentials you and pressed sign up you will be logged in automatically.
+
+Login with account:
+Enter valid credentials of previously created account and press log in.
+
+
+
+Search for a location and you will recieve temprature along with other details in that city, you can check the map as well for location.
+
+Press the location button on the searchbar to receive weather details from your current locaiton.
+
+You can change to night mode and day mode with the switch in the top left corner of the page.
+
+Check forecast by pressing the switch under the searchbar to recieve information about upcoming weather.
+
+
+
+
+
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
